@@ -1,0 +1,154 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Blue Jay</title>
+	<script type="text/javascript" src="phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+//var platforms;
+var cursors;
+var mariposas;
+var serps;
+//var para puntaje
+var score = 0;
+var scoreText;
+
+var direccion=1;//0=izquierda, 1=derecha
+
+function preload() {
+	game.load.image('fondo', 'assets/fondo.PNG');
+	game.load.image('mariposa', 'assets/mariposa.png');
+	game.load.image('serpiente', 'assets/serpiente.png');
+    game.load.spritesheet('jay', 'assets/jay.png', 109.8125, 102);//alias,url,ancho,alto
+	
+	game.load.image('win', 'assets/win.png');
+	game.load.image('fin', 'assets/roto.png');
+}
+
+function create() {
+	game.physics.startSystem(Phaser.Physics.ARCADE);//indica que va a ser un juego arcade
+	
+	game.add.sprite(0, 0, 'fondo');
+	
+	//---------------------player
+	player = game.add.sprite(game.world.width*0.5, game.world.height*0.5, 'jay');
+	
+	game.physics.arcade.enable(player);
+	
+	player.body.collideWorldBounds = true;//habilita que el player colisione con el borde del world
+	
+	player.animations.add('left', [0, 1, 2, 3, 4, 5, 6, 7], 10, true);//agrega un nombre 'left' a la animación a izquierda, con los sprite 0,1,2,3, corre a 10 marcos/segundo y el true es para habilitar el ciclo 0,1,2,3,0,1,2,3,....
+    player.animations.add('right', [8, 9, 10, 11, 12, 13, 14, 15], 10, true);//agrega un nombre/alias 'right' a la animación a derecha, con los sprite 5,6,7,8 corre a 20 marcos/segundo y el true es para habilitar el ciclo 5,6,7,8,5,6,7,8,5,....
+	
+	//---------------cursores
+	cursors = game.input.keyboard.createCursorKeys();
+	
+	//--------------------mariposas
+	mariposas = game.add.group();
+
+    mariposas.enableBody = true;
+
+    for (var i = 0; i < 15; i++)
+    {
+        var mariposa = mariposas.create(Math.random()*(game.world.width-30), Math.random()*(game.world.height-30), 'mariposa');
+
+      }
+	  
+	 //----------serpiente
+	 serps = game.add.group();
+	 serps.enableBody = true;
+	 
+	 
+	
+	//---------------------puntaje
+	scoreText = game.add.text(game.world.width-150, 16, 'score: 0', { fontSize: '32px', fill: '#990000' });//agrega texto al game.world con la posiciones y el texto 'score:0' con ese estilo de texto(tamaño y color)
+	
+}
+
+function update() {
+	
+	//-------------cursores
+	player.body.velocity.x = 0;//velocidad inicial = 0, xq todavía no se tocó ninguna tecla
+	player.body.velocity.y = 0;
+	
+	if (cursors.left.isDown)//si se apreta a izquierda
+    {
+        direccion = 0;
+		//  Move to the left
+        player.body.velocity.x = -300;
+
+        player.animations.play('left');
+    }
+    else if (cursors.right.isDown)
+    	{
+        	direccion = 1;
+			//  Move to the right
+        	player.body.velocity.x = 300;
+
+        	player.animations.play('right');
+    	}
+    	else if(cursors.down.isDown)//si se apreta tecla abajo,numeros positivos
+    		{
+      	 	 	player.body.velocity.y = 150;
+				if(direccion == 1)
+			 		player.animations.play('right');
+				else
+					player.animations.play('left');
+			}
+			else if(cursors.up.isDown)//si se apreta tecla arriba,numeros negativos
+				{
+					player.body.velocity.y = -150;
+					if(direccion == 1)
+			 			player.animations.play('right');
+					else
+						player.animations.play('left');
+			 	}
+				else{//ninguna tecla fue apretada
+					if(direccion == 1)
+			 			player.animations.play('right');
+					else
+						player.animations.play('left');
+    			}
+	
+	game.physics.arcade.overlap(player, mariposas, collectPoints, null, this);
+	game.physics.arcade.overlap(player, serps, morir, null, this);
+}
+
+function collectPoints (player, mariposa) {
+
+    mariposa.kill();//mata la mariposa
+	
+	serp = serps.create(Math.random()*(game.world.width), 0, 'serpiente');
+	 serp.body.collideWorldBounds = true;
+	 serp.body.gravity.y = 300;
+	 serp.body.bounce.y = 0.2;
+	 
+	score += 10;
+    scoreText.text = 'Score: ' + score;
+
+	if(score == 150){
+		game.add.sprite(game.world.width-530,game.world.height-377,'win');
+	}
+}
+
+function morir (player, serp){
+	player.kill();
+	
+	mensaje = game.add.text(game.world.width*0.5, game.world.height*0.5, 'PERDISTE', { fill: 'red'});
+	game.add.sprite(0, 0, 'fin');
+}
+</script>
+
+</body>
+</html>
