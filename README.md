@@ -1,2 +1,2 @@
 # silvia.soto.github.io
-IA en Juegos
+Repositorio para IA en Juegos
