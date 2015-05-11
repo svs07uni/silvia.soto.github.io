@@ -1,0 +1,112 @@
+<html lang="en"> 
+    <head> 
+        <meta charset="UTF-8" />
+        <title>Blue Jay</title>
+        <script type="text/javascript" src="phaser.min.js"></script>
+        <style type="text/css">
+            body {
+                margin: 0;
+            }
+            .boton:hover{
+                background-color: #00CCCC;
+                font-size:50px;
+                color:white;
+            }
+        </style>
+        <!-- LIBS-->
+        <script src="scripts/jq.min.js"></script>
+        <script src="scripts/phaser.js"></script>
+
+        <!-- UTILS-->
+        <script src="scripts/utils/movementUtils.js"></script>
+
+        <!-- BASE OBJS -->
+        <script src="scripts/objs/entity.js"></script>
+        <script src="scripts/objs/boid.js"></script>
+        <script src="scripts/objs/immovable.js"></script>
+        <script src="scripts/objs/arrivingBoid.js"></script>
+
+        <script src="scripts/objs/arrivalDestination.js"></script>
+
+        <!-- BEHAVIORS -->
+        <script src="scripts/behaviors/behavior.js"></script>
+        <script src="scripts/behaviors/behaviorArrive.js"></script>
+
+        <!-- GAME OBJS-->
+
+
+
+    </head>
+    <body>
+
+        <script type="text/javascript">
+
+            var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
+            //var platforms;
+            var cursors;
+            var mariposas;
+            var serps;
+
+            function preload() {
+                game.load.image('fondo', 'assets/fondo.PNG');
+                game.load.image('mariposa', 'assets/mariposa.png');
+                game.load.image('serpiente', 'assets/serpiente.png');
+                game.load.image('jay', 'assets/un_jay.png');//alias,url,ancho,alto
+
+                game.load.image('casa', 'assets/home.png');
+
+            }
+
+            var ave;
+            var mariposa;
+
+            function create() {
+                game.physics.startSystem(Phaser.Physics.ARCADE);//indica que va a ser un juego arcade
+
+                game.add.sprite(0, 0, 'fondo');
+
+                mariposa = new ArrivalDestination(game);
+
+                mariposa.initialize(2, 'mariposa');
+                var posM = new Phaser.Point(Math.floor(Math.random() * game.world.bounds.width), Math.floor(Math.random() * game.world.bounds.height));
+                var velM = new Phaser.Point(0, 0);
+                mariposa.create(posM, velM, 0, false);
+
+                ave = new ArrivingBoid(game, mariposa);
+
+                ave.initialize(1, 'jay');
+                var pos = new Phaser.Point(game.world.width - 50, game.world.height - 50);
+                var vel = new Phaser.Point(0, 0);
+                ave.create(pos, vel, 0, false);
+                ave.behavior = new BehaviorArrive(ave);
+            }
+
+            function update() {
+                ave.behavior.update();
+
+                game.physics.arcade.overlap(mariposa.sprite, ave.sprite, moverMariposa, null, this);
+
+            }
+
+            function moverMariposa() {
+                var posM = new Phaser.Point(Math.floor(Math.random() * game.world.bounds.width), Math.floor(Math.random() * game.world.bounds.height));
+                mariposa.setPosition(posM);
+            }
+        </script>
+
+        <div style="float: right; position:relative; top:50px; right:40px">
+            <ul style="list-style-type: none">
+                <li><button class='boton' style=font-size:40px onClick="window.location.href = 'seek.html'">Seek</button></li>
+                <li><button class='boton' style=font-size:40px onClick="window.location.href = 'flee.html'">Flee</button></li>
+                <li><button class='boton' style=font-size:40px onClick="window.location.href = 'wander.html'">Wander</button></li>
+                <li><button class='boton' style="font-size:40px; background-color: #009999; color:white;" onClick="window.location.href = 'arrive.html'">Arrive</button></li>
+                <li><button class='boton' style=font-size:40px onClick="window.location.href = 'persuit.html'">Persuit&Evade</button></li>
+                <li><button class='boton' style=font-size:40px onClick="window.location.href = 'index.html'">Jugar!</button></li>
+            </ul>
+        </div>
+
+    </body>
+</html>
+
+
