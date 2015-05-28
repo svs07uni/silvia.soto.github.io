@@ -13,6 +13,7 @@ Entity = function (game) {
 };
 
 Entity.prototype.initialize = function (index, asset) {
+    
     this.sprite = this.game.add.sprite(0, 0, asset);
     this.sprite.id = index;
     this.sprite.anchor.set(0.5);
@@ -21,7 +22,6 @@ Entity.prototype.initialize = function (index, asset) {
 }
 
 Entity.prototype.create = function (pos, vel, angle, debug) {
-
     this.sprite.angle = angle;
     this.sprite.position.x = pos.x;
     this.sprite.position.y = pos.y;

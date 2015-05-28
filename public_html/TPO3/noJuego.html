@@ -1,0 +1,128 @@
+<html lang="en"> 
+    <head> 
+        <meta charset="UTF-8" />
+        <title>Blue Jay</title>
+        <script type="text/javascript" src="phaser.min.js"></script>
+        <style type="text/css">
+            body {
+                margin: 0;
+            }
+            .boton:hover{
+                background-color: #00CCCC;
+                font-size:50px;
+                color:white;
+            }
+            .boton{
+                float: left;
+            }
+        </style>
+        <!-- LIBS-->
+        <script src="scripts/jq.min.js"></script>
+        <script src="scripts/phaser.js"></script>
+
+        <!-- UTILS-->
+        <script src="scripts/utils/movementUtils.js"></script>
+
+        <!-- BASE OBJS -->
+        <script src="scripts/objs/entity.js"></script>
+        <script src="scripts/objs/boid.js"></script>
+        <script src="scripts/objs/immovable.js"></script>
+        <script src="scripts/objs/wanderingBoid.js"></script>
+        <script src="scripts/objs/fleeingBoid.js"></script>
+        <script src="scripts/objs/mariposa.js"></script>
+        <script src="scripts/objs/ave.js"></script>
+
+        <!-- BEHAVIORS -->
+        <script src="scripts/behaviors/behavior.js"></script>
+        <script src="scripts/behaviors/behaviorWander.js"></script>
+        <script src="scripts/behaviors/behaviorFind.js"></script>
+        <script src="scripts/behaviors/behaviorFlee.js"></script>
+        <!-- GAME OBJS-->
+
+
+
+    </head>
+    <body>
+
+        <script type="text/javascript">
+
+            var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update});
+
+
+            function preload() {
+                game.load.image('fondo', 'assets/fondo.PNG');
+                game.load.spritesheet('mariposa', 'assets/sprite_mariposa.png', 84, 48, 10);
+                game.load.image('jay', 'assets/un_jay.png');
+            }
+
+            var mariposas = [];
+            var cantMariposas = 5;
+            var ave;
+            var aves = [];
+
+            function create() {
+                game.physics.startSystem(Phaser.Physics.ARCADE);//indica que va a ser un juego arcade
+
+                game.add.image(0, 0, 'fondo');
+
+                for (var i = 0; i < cantMariposas; i++) {
+                    var mariposa = new Mariposa(game, aves);
+
+                    mariposa.initialize(1, 'mariposa');
+                    mariposa.sprite.animations.add('volar');
+                    mariposa.sprite.animations.play('volar', 50, true);
+                    mariposa.crear(1);
+                    mariposas.push(mariposa);
+                }
+
+                ave = new Ave(game);
+                aves.push(ave);
+                setTimeout(crearPajaro, 3000);
+
+            }
+            var existeAve = false;
+            var maripo;
+            function update() {
+                for (var i = 0; i < cantMariposas; i++)
+                    mariposas[i].update();
+
+
+
+                if (existeAve)
+                    ave.update();
+
+                if (cantVivos(mariposas) == 3) {//No quedan mariposas
+                    for (var i = 0; i < mariposas.length; i++) {
+                        if(mariposas[i].sprite.alive){
+                            mariposas[i].crear(2);
+                        }
+                    }
+                }
+            }
+
+            function crearPajaro() {
+                ave.initialize(1, 'jay');
+                ave.crear(mariposas);
+                existeAve = true;
+            }
+
+            function cantVivos(col) {
+                var cont = 0;
+                for (var i = 0; i < col.length; i++)
+                    if (col[i].sprite.alive)
+                        cont++;
+                return cont;
+            }
+
+
+        </script>
+
+
+
+    </body>
+</html>
+
+
+
+
+

@@ -8,6 +8,7 @@ BehaviorFind.prototype = Object.create(Behavior.prototype);
 BehaviorFind.prototype.constructor = BehaviorFind;
 
 
+
 BehaviorFind.prototype = {
 
 	update:function(){
@@ -24,5 +25,9 @@ BehaviorFind.prototype = {
 		var desired = new Phaser.Point(seek.x*this.boid.maxSpeed, seek.y*this.boid.maxSpeed);
 		var steer = MovementUtils.limit(Phaser.Point.subtract(desired, this.boid.sprite.body.velocity),this.boid.maxForce);
 		return steer;
-	}
+	},
+        
+        cambiarTarget:function(ntarget){
+            this.target = ntarget;
+        }
 }

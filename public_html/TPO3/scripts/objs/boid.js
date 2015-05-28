@@ -66,3 +66,23 @@ Boid.prototype.debugRender = function() {
 
 	this.game.debug.geom(this.debugVel,'red', true);
 }
+
+
+Boid.prototype.cargarWandering = function(){
+    this.wanderRadialMag = 20;
+	this.distanceExtension = 100;
+	this.wanderAngle = 0;
+	this.wanderVariance = 180;
+	this.wanderDate = new Date();
+	this.wanderDelta = 200;
+
+	
+}
+
+Boid.prototype.cargarFlee = function(target){
+    this.avoidanceTarget = target;
+	this.runRadius = 400;
+	this.maxFleeSpeed = 100;
+	this.maxFleeForce = 50;
+	this.minFleeForce = 10;
+}
